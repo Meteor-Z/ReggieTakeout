@@ -15,6 +15,7 @@ spring:
     password: 200298
 mybatis-plus:
   configuration:
+    # 这个就是实体类的驼峰命名法的转化，mybatis里面将实体类的idNumber 对应到id_number 现在是默认开启
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:

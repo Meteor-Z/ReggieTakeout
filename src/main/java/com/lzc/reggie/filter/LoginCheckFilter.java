@@ -3,10 +3,7 @@ package com.lzc.reggie.filter;
 import com.alibaba.fastjson.JSON;
 import com.lzc.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.util.PathMatcher;
-import org.springframework.util.ReflectionUtils;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -28,7 +25,7 @@ public class LoginCheckFilter implements Filter
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String requestURI = request.getRequestURI();
 
-        log.info(requestURI);
+//        log.info(requestURI);
         String[] urls = new String[]
                 {
                         "/employee/login",
@@ -37,7 +34,7 @@ public class LoginCheckFilter implements Filter
                         "/front/**",
                 };
         boolean isMatch = check(urls, requestURI);
-        if(isMatch)
+        if (isMatch)
         {
             filterChain.doFilter(request, response);
             return;
@@ -63,5 +60,4 @@ public class LoginCheckFilter implements Filter
         }
         return false;
     }
-
 }

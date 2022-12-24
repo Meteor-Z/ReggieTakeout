@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lzc.reggie.common.R;
 import com.lzc.reggie.entity.Employee;
 import com.lzc.reggie.service.EmployeeService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
@@ -13,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -70,5 +70,12 @@ public class EmployeeController
 
         request.getSession().setAttribute("employee", emp.getId());
         return R.success(emp);
+    }
+
+    @PostMapping("/logout")
+    public R<String> logout(HttpServletRequest request)
+    {
+        request.getSession().removeAttribute("employee");
+        return R.success("退出成功!");
     }
 }

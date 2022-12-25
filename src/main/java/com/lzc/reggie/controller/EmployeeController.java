@@ -1,18 +1,19 @@
 package com.lzc.reggie.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lzc.reggie.common.R;
 import com.lzc.reggie.entity.Employee;
 import com.lzc.reggie.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 
 @Slf4j
 @RestController
@@ -72,10 +73,73 @@ public class EmployeeController
         return R.success(emp);
     }
 
+    /**
+     * 员工登出
+     *
+     * @param request
+     * @return
+     */
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request)
     {
         request.getSession().removeAttribute("employee");
         return R.success("退出成功!");
     }
+
+    /**
+     * 新增员工
+     *
+     * @param employee
+     * @return
+     */
+    @PostMapping()
+    public R<String> save(HttpServletRequest request, @RequestBody Employee employee)
+    {
+        log.info(employee.toString());
+        // 设置初始化密码。并且先进行md5进行加密
+        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+
+        // 将当前的创建时间和更新时间加上
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        // 设置当前更新人和创建人
+        Long userId = (Long) request.getSession().getAttribute("employee");
+        employee.setCreateUser(userId);
+        employee.setUpdateUser(userId);
+        employeeService.save(employee);
+        return R.success("创建成功");
+    }
+
+    /**
+     * 进行分页查询 默认 page = 1 pageSize = 10
+     * 如果传入 name 就是要进行查询
+     *
+     * @return
+     */
+    @GetMapping("/page")
+    public R<Page> page(int page, int pageSize, String name)
+    {
+
+        log.info("page = {}, pageSize = {}, name = {}", page, pageSize, name); // 看是否查询到了
+
+        // 基于MyBatisPlus 的分页插件进行查询
+
+        // 构造分页构造器
+        Page pageInfo = new Page(page, pageSize); // 一页请求的数据
+
+        // 构造查询条件构造器
+        LambdaQueryWrapper<Employee> queryWrapper = new LambdaQueryWrapper();
+        queryWrapper.like(StringUtils.isNotEmpty(name), Employee::getName, name);
+
+        // 添加排序条件
+        queryWrapper.orderByDesc(Employee::getUpdateTime);
+
+        // 执行查询
+        employeeService.page(pageInfo, queryWrapper); // 这样就直接处理好了
+        R.success(pageInfo);
+
+        return null;
+    }
+
 }

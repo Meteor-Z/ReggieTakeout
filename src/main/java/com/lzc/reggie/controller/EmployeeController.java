@@ -137,9 +137,27 @@ public class EmployeeController
 
         // 执行查询
         employeeService.page(pageInfo, queryWrapper); // 这样就直接处理好了
-        R.success(pageInfo);
+        // 返回查询
 
-        return null;
+        return R.success(pageInfo);
     }
 
+    /**
+     * 根据 id 来修改信息 这个 id 有可能出现错误,
+     *
+     * @param employee
+     * @return
+     */
+    @PutMapping()
+    public R<String> update(HttpServletRequest request, @RequestBody Employee employee)
+    {
+        // 查看是否传入了
+        log.info(employee.toString());
+
+        employee.setUpdateTime(LocalDateTime.now());
+        Long empId = (Long) request.getSession().getAttribute("employee");
+        employee.setUpdateUser(empId);
+        employeeService.updateById(employee);
+        return R.success("员工修改成功");
+    }
 }

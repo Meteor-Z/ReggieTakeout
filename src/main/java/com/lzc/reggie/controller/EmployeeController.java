@@ -100,13 +100,14 @@ public class EmployeeController
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
         // 将当前的创建时间和更新时间加上
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
 
         // 设置当前更新人和创建人
         Long userId = (Long) request.getSession().getAttribute("employee");
-        employee.setCreateUser(userId);
-        employee.setUpdateUser(userId);
+
+//        employee.setCreateUser(userId);
+//        employee.setUpdateUser(userId);
         employeeService.save(employee);
         return R.success("创建成功");
     }
@@ -156,8 +157,31 @@ public class EmployeeController
 
         employee.setUpdateTime(LocalDateTime.now());
         Long empId = (Long) request.getSession().getAttribute("employee");
-        employee.setUpdateUser(empId);
+
+//        employee.setUpdateUser(empId);
         employeeService.updateById(employee);
+
         return R.success("员工修改成功");
+    }
+
+    /**
+     * 根据 id 来查询员工信息 然后进行修改和删除 修改的上传在上面已经开发完了
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping({"/{id}"})
+    public R<Employee> getById(@PathVariable Long id)
+    {
+        log.info("根据 id 来查询信息");
+        Employee employee = employeeService.getById(id);
+        // 有可能两个人一起，导致不能查询到，所以会导致寄了
+        if (employee != null)
+        {
+            return R.success(employee);
+        }else
+        {
+            return R.error("没有查询到相关信息");
+        }
     }
 }

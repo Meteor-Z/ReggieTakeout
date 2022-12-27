@@ -1,6 +1,8 @@
 package com.lzc.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.lzc.reggie.common.BaseContext;
 import com.lzc.reggie.common.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.AntPathMatcher;
@@ -26,14 +28,10 @@ public class LoginCheckFilter implements Filter
         String requestURI = request.getRequestURI();
 
 //        log.info(requestURI);
-        String[] urls = new String[]
-                {
-                        "/employee/login",
-                        "/employee/logout",
-                        "/backend/**",
-                        "/front/**",
-                };
+        String[] urls = new String[]{"/employee/login", "/employee/logout", "/backend/**", "/front/**",};
         boolean isMatch = check(urls, requestURI);
+
+
         if (isMatch)
         {
             filterChain.doFilter(request, response);
@@ -42,12 +40,23 @@ public class LoginCheckFilter implements Filter
         Object employee = request.getSession().getAttribute("employee");
         if (employee != null)
         {
+            // 这里就是登录成功了 然后设置 ThreadLocal 的 Id
+            Long empId = (Long) request.getSession().getAttribute("employee");
+            log.info("当前的ID,{}", empId.toString());
+            BaseContext.setCurrentId(empId); // 设置当前线程的
+
             filterChain.doFilter(request, response);
             return;
         }
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
     }
 
+    /**
+     * 检测是否合格，
+     * @param urls
+     * @param requestURI
+     * @return 如果合格，那么就返回 true， 否则就返回 false
+     */
     public boolean check(String[] urls, String requestURI)
     {
         for (String url : urls)

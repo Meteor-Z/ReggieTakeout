@@ -27,13 +27,13 @@ public class WebMvcConfig extends WebMvcConfigurationSupport
         // 设置对象转换器，底层使用 Jackson 将 java 转化成 json
         messageConverter.setObjectMapper(new JacksonObjectMapper());
 
-        // 追加自己的转换器
+        // 追加自己的转换器 这是使用了自己的转换器了，所以要加在第一句话
         converters.add(0, messageConverter);
 //        super.extendMessageConverters(converters);
     }
 
     /**
-     * 访问静态资源的时候跳过 MVC
+     * 访问静态资源的时候跳过 MVC 否则无法访问
      * @param registry
      */
     @Override

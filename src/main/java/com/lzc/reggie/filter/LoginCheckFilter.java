@@ -19,6 +19,14 @@ public class LoginCheckFilter implements Filter
 {
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
+    /**
+     * 进行过滤
+     * @param servletRequest
+     * @param servletResponse
+     * @param filterChain
+     * @throws IOException
+     * @throws ServletException
+     */
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException
     {
@@ -28,6 +36,7 @@ public class LoginCheckFilter implements Filter
         String requestURI = request.getRequestURI();
 
 //        log.info(requestURI);
+        // 白名单
         String[] urls = new String[]{"/employee/login", "/employee/logout", "/backend/**", "/front/**",};
         boolean isMatch = check(urls, requestURI);
 

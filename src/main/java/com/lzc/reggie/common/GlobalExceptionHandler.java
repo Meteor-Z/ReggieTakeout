@@ -32,4 +32,18 @@ public class GlobalExceptionHandler
         }
 
     }
+
+    /**
+     * 处理 菜品相关联的异常
+     *
+     * @param exception
+     * @return
+     */
+    @ExceptionHandler(CustomException.class)
+    public R<String> expectionHander(CustomException exception)
+    {
+        log.info(exception.getMessage());
+
+        return R.error(exception.getMessage());
+    }
 }

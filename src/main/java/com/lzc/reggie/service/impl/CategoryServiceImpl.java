@@ -2,6 +2,7 @@ package com.lzc.reggie.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.lzc.reggie.common.CustomException;
 import com.lzc.reggie.entity.Category;
 import com.lzc.reggie.entity.Dish;
 import com.lzc.reggie.entity.Setmeal;
@@ -37,6 +38,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (dishCount > 0)
         {
            // 抛出一个异常，因为有相关关联
+            throw new CustomException("有相关联的菜品");
         }
 
         LambdaQueryWrapper<Setmeal> setmealLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -45,6 +47,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         if (setmealCount > 0)
         {
             // 有相关关联。要抛出去一个异常
+            throw new CustomException("有有相关的菜品,不能删除");
+
         }
         // 现在就可以直接删除了
 

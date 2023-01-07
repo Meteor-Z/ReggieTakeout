@@ -7,7 +7,9 @@ import com.lzc.reggie.mapper.DishFlavorMapper;
 import com.lzc.reggie.mapper.DishMapper;
 import com.lzc.reggie.service.DishFlavorService;
 import com.lzc.reggie.service.DishService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DishFlavorServiceImpl extends ServiceImpl<DishFlavorMapper, DishFlavor> implements DishFlavorService
 {
 }

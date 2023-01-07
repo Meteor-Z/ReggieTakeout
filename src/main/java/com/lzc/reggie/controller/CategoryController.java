@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.print.DocFlavor;
 import java.awt.*;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -77,6 +78,7 @@ public class CategoryController
 
     /**
      * 通过 ids 来修改数据
+     *
      * @return
      */
     @PutMapping()
@@ -87,6 +89,18 @@ public class CategoryController
         return R.success("修改成功");
     }
 
+    @GetMapping("/list")
+    public R<List<Category>> list(Category category)
+    {
+        // 条件构造题
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        // 添加条件
+        queryWrapper.eq(category.getType() != null, Category::getType, category.getType());
+        queryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime); // 先按照 sort 进行排序, 然后按照更新时间进行排序
 
+        List<Category> list = categoryService.list(queryWrapper);
+
+        return R.success(list);
+    }
 
 }

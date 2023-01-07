@@ -36,8 +36,8 @@ public class LoginCheckFilter implements Filter
         String requestURI = request.getRequestURI();
 
 //        log.info(requestURI);
-        // 白名单
-        String[] urls = new String[]{"/employee/login", "/employee/logout", "/backend/**", "/front/**",};
+        // 白名单 注意这里是直接使用的是项目内部的 url 访问地址
+        String[] urls = new String[]{"/employee/login", "/employee/logout", "/backend/**", "/front/**","/common/**",};
         boolean isMatch = check(urls, requestURI);
 
 

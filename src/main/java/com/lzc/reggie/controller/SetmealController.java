@@ -59,6 +59,7 @@ public class SetmealController
         queryWrapper.orderByDesc(Setmeal::getUpdateTime);
         setmealService.page(pageInfo, queryWrapper);
 
+        // 拷贝数据
         BeanUtils.copyProperties(pageInfo, setmealDtoPage, "records");
         List<Setmeal> records = pageInfo.getRecords();
 
@@ -80,4 +81,15 @@ public class SetmealController
         return R.success(setmealDtoPage);
     }
 
+    /**
+     * 删除套餐
+     * @param ids
+     * @return
+     */
+    @DeleteMapping()
+    public R<String> delete(@RequestParam List<Long> ids)
+    {
+        setmealService.deleteWithDish(ids);
+        return R.success("删除成功!");
+    }
 }

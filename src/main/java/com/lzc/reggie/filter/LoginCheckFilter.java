@@ -21,6 +21,7 @@ public class LoginCheckFilter implements Filter
 
     /**
      * 进行过滤
+     *
      * @param servletRequest
      * @param servletResponse
      * @param filterChain
@@ -37,7 +38,13 @@ public class LoginCheckFilter implements Filter
 
 //        log.info(requestURI);
         // 白名单 注意这里是直接使用的是项目内部的 url 访问地址
-        String[] urls = new String[]{"/employee/login", "/employee/logout", "/backend/**", "/front/**","/common/**",};
+        String[] urls = new String[]{"/employee/login",
+                "/employee/logout",
+                "/backend/**",
+                "/front/**",
+                "/common/**",
+                "/user/login",
+                "/user/sendMsg"};
         boolean isMatch = check(urls, requestURI);
 
 
@@ -47,6 +54,7 @@ public class LoginCheckFilter implements Filter
             return;
         }
         Object employee = request.getSession().getAttribute("employee");
+        Object user = request.getSession().getAttribute("user");
         if (employee != null)
         {
             // 这里就是登录成功了 然后设置 ThreadLocal 的 Id
@@ -57,11 +65,20 @@ public class LoginCheckFilter implements Filter
             filterChain.doFilter(request, response);
             return;
         }
+        if (user != null)
+        {
+            Long userId = (Long) request.getSession().getAttribute("user");
+            log.info("当前用户的id:{}", userId.toString());
+            BaseContext.setCurrentId(userId);
+            filterChain.doFilter(request, response);
+            return;
+        }
         response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
     }
 
     /**
      * 检测是否合格，
+     *
      * @param urls
      * @param requestURI
      * @return 如果合格，那么就返回 true， 否则就返回 false

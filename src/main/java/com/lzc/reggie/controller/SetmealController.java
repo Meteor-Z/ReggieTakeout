@@ -136,4 +136,15 @@ public class SetmealController
         setmealService.updateBatchById(list);
         return R.success("套餐已全部出售");
     }
+
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(Setmeal setmeal)
+    {
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null, Setmeal::getStatus, setmeal.getStatus());
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+        List<Setmeal> setmealList = setmealService.list(queryWrapper);
+        return R.success(setmealList);
+    }
 }

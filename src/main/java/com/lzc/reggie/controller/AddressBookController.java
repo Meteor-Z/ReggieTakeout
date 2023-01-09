@@ -3,6 +3,7 @@ package com.lzc.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.lzc.reggie.common.BaseContext;
+import com.lzc.reggie.common.CustomException;
 import com.lzc.reggie.common.R;
 import com.lzc.reggie.entity.AddressBook;
 import com.lzc.reggie.service.AddressBookService;
@@ -44,6 +45,7 @@ public class AddressBookController
      * @param addressBook
      * @return
      */
+    @PutMapping("/default")
     public R<AddressBook> setDefault(@RequestBody AddressBook addressBook)
     {
         log.info("addressBook: {}", addressBook);
@@ -56,6 +58,25 @@ public class AddressBookController
         // 单独将这个设置成一个 默认地址;
         addressBook.setIsDefault(1);
         addressBookService.updateById(addressBook);
+        return R.success(addressBook);
+    }
+
+    /**
+     * 获得默认地址
+     *
+     * @return
+     */
+    @GetMapping("/default")
+    public R<AddressBook> getDefault()
+    {
+        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
+        queryWrapper.eq(AddressBook::getIsDefault, 1);
+        AddressBook addressBook = addressBookService.getOne(queryWrapper);
+        if (addressBook == null)
+        {
+            throw new CustomException("没有默认地址");
+        }
         return R.success(addressBook);
     }
 
@@ -73,25 +94,11 @@ public class AddressBookController
     }
 
     /**
-     * 查询默认地址
+     * 列出所有的 id
      *
+     * @param addressBook
      * @return
      */
-    @GetMapping("/default")
-    public R<AddressBook> getDefault()
-    {
-        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(AddressBook::getUserId, BaseContext.getCurrentId());
-        queryWrapper.eq(AddressBook::getIsDefault, 1);
-        AddressBook addressBook = addressBookService.getOne(queryWrapper);
-        if (addressBook != null)
-        {
-            return R.success(addressBook);
-        } else
-        {
-            return R.error("没有查找到该对象");
-        }
-    }
 
     @GetMapping("/list")
     public R<List<AddressBook>> list(AddressBook addressBook)
